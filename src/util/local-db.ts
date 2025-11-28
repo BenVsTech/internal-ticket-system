@@ -6,7 +6,7 @@ import { databaseConstants } from "@/util/constants";
 // Exports
 
 export const localDatabaseConfiguration: DatabaseConfiguration = {
-    name: 'internal-ticket-system',
+    name: 'internal_ticket_system',
     globalTriggerFunctions: [
         `
         CREATE OR REPLACE FUNCTION update_updated_at_column()

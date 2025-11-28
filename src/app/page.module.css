@@ -1,0 +1,21 @@
+/* Containers */
+
+.column-container {
+    display: flex;
+    flex-direction: column;
+}
+
+.row-container {
+    display: flex;
+    flex-direction: row;
+}
+
+/* Structure */
+
+.width-100 {
+    width: 100%;
+}
+
+.pd-all-round{
+    padding: 20px 20px 20px 20px;
+}

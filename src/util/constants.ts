@@ -11,3 +11,15 @@ export const databaseConstants = {
     boolean: 'BOOLEAN NOT NULL DEFAULT FALSE',
     json: 'JSONB NOT NULL',
 }
+
+export const testUser = {
+    team: {
+        name: 'Test Team',
+        description: 'This is a test team',
+    },
+    user: {
+        name: 'Test User',
+        email: 'test@test.com',
+        password: 'test',
+    },
+}

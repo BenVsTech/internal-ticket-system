@@ -1,10 +1,11 @@
 // Imports
 
 import { localDatabaseConfiguration } from "@/util/local-db";
+import { testUser } from "@/util/constants";
 import { connectToDatabase, closeDatabaseConnection, DatabaseClient } from "@/lib/core/database";
 import { DataReturnObject } from "@/types/helper";
 import { handleCloseDatabaseConnections } from "@/lib/core/helper";
-import { checkIfDatabaseExists, createDatabase, createDatabaseSchema } from "@/lib/core/database/queries";
+import { checkIfDatabaseExists, createDatabase, createDatabaseSchema, dynamicSendData } from "@/lib/core/database/queries";
 
 // Export services
 
@@ -99,6 +100,70 @@ export async function createLocalDatabase(): Promise<DataReturnObject<boolean>> 
 
         await handleCloseDatabaseConnections(temporaryDbClient, dbClient);
 
+    }
+}
+
+export async function createTestUser(): Promise<DataReturnObject<boolean>> {
+
+    let dbClient: DatabaseClient | null = null;
+
+    try{
+
+        const databaseConnection = await connectToDatabase(false);
+        if(!databaseConnection.status || !databaseConnection.data) {
+            return {
+                status: false,
+                data: null,
+                message: databaseConnection.message
+            };
+        }
+
+        dbClient = databaseConnection.data;
+
+        const createTestTeamResult = await dynamicSendData(
+            dbClient, 
+            'team', 
+            ['name', 'description'], 
+            [testUser.team.name, testUser.team.description]
+        );
+        if(!createTestTeamResult.status) {
+            return {
+                status: false,
+                data: null,
+                message: createTestTeamResult.message
+            };
+        }
+
+        const testTeamId = createTestTeamResult.data;
+
+        const createTestUserResult = await dynamicSendData(
+            dbClient, 
+            'users', 
+            ['name', 'email', 'password', 'team_id'], 
+            [testUser.user.name, testUser.user.email, testUser.user.password, testTeamId]
+        );
+        if(!createTestUserResult.status) {
+            return {
+                status: false,
+                data: null,
+                message: createTestUserResult.message
+            };
+        }
+
+        return {
+            status: true,
+            data: true,
+            message: 'Test user created successfully'
+        };
+        
+    } catch(error: unknown) {
+        return {
+            status: false,
+            data: null,
+            message: error instanceof Error ? error.message : 'Unknown error while creating test user'
+        };
+    } finally{
+        await handleCloseDatabaseConnections(null, dbClient);
     }
 }
 

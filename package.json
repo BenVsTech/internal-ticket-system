@@ -7,7 +7,8 @@
     "build": "next build",
     "start": "next start",
     "lint": "eslint",
-    "create-local-db": "tsx script/localDatabaseCreation.ts"
+    "create-local-db": "tsx script/localDatabaseCreation.ts",
+    "create-test-user": "tsx script/testUserCreation.ts"
   },
   "dependencies": {
     "dotenv": "^17.2.3",

@@ -19,3 +19,62 @@
 .pd-all-round{
     padding: 20px 20px 20px 20px;
 }
+
+.content-center {
+    justify-content: center;
+}
+
+.align-center {
+    align-items: center;
+}
+
+.gap-5 {
+    gap: 5px;
+}
+
+.gap-10 {
+    gap: 10px;
+}
+
+.gap-20 {
+    gap: 20px;
+}
+
+.text-center {
+    text-align: center;
+}
+
+/* Styles */
+
+.title-text {
+    font-size: 24px;
+    font-weight: bold;
+}
+
+.input-structure {
+    padding: 10px 20px;
+    border-radius: 5px;
+    border: 1.5px solid #007bff;
+    font-size: 16px;
+    font-weight: bold;
+}
+
+.button-structure {
+    padding: 10px 20px;
+    border-radius: 5px;
+    border: none;
+    cursor: pointer;
+    font-size: 16px;
+    font-weight: bold;
+}
+
+.primary-button {
+    background-color: #007bff;
+    color: #ffffff;
+    border: 1.5px solid #007bff;
+}
+
+.primary-button:hover {
+    background-color: #ffffff;
+    color: #007bff;
+}

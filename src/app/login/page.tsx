@@ -42,10 +42,10 @@ export default function Login() {
     };
   
     return (
-      <div className={`${styles["column-container"]} ${styles["width-100"]} ${styles["pd-all-round"]}`}>
-        <h1>Login</h1>
-        <form onSubmit={handleSubmit}>
-            <div>
+      <div className={`${styles["column-container"]} ${styles["width-100"]} ${styles["pd-all-round"]} ${styles["content-center"]} ${styles["align-center"]} ${styles["gap-20"]}`}>
+        <h1 className={styles["title-text"]}>Login</h1>
+        <form onSubmit={handleSubmit} className={`${styles["column-container"]} ${styles["gap-10"]}`}>
+            <div className={`${styles["column-container"]} ${styles["gap-5"]}`}>
                 <label htmlFor="email">Email</label>
                 <input
                     id="email"
@@ -54,9 +54,10 @@ export default function Login() {
                     onChange={(e) => setEmail(e.target.value)}
                     required
                     disabled={isLoading}
+                    className={styles["input-structure"]}
                 />
             </div>
-            <div>
+            <div className={`${styles["column-container"]} ${styles["gap-5"]}`}>
                 <label htmlFor="password">Password</label>
                 <input
                     id="password"
@@ -65,14 +66,16 @@ export default function Login() {
                     onChange={(e) => setPassword(e.target.value)}
                     required
                     disabled={isLoading}
+                    className={styles["input-structure"]}
                 />
             </div>
             {error && (
-                <div>
+                <div className={`${styles["column-container"]} ${styles["gap-5"]} ${styles["text-center"]}`}>
                     {error}
                 </div>
             )}
             <button 
+                className={`${styles["button-structure"]} ${styles["primary-button"]}`}
                 type="submit" 
                 disabled={isLoading}
             >

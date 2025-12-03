@@ -10,47 +10,55 @@ export default function Form({ setup, onClose, onSubmit }: FormProps) {
 
     const [apiOptions, setApiOptions] = useState<any[]>([]);
     const [formData, setFormData] = useState<FormDataType>({});
-
-    useEffect(() => {
-        console.log('Form data:', formData);
-    }, [formData])
+    const [optionsLoaded, setOptionsLoaded] = useState<boolean>(false);
+    const [dataLoaded, setDataLoaded] = useState<boolean>(false);
 
     useEffect(() => {
 
         if(!setup.content.apiOptionsStatus) {
             console.log('No API options found');
+            setOptionsLoaded(true);
             return;
         }
 
         const getOptions = async function () {
 
-            let options: any[] = [];
+            try{
 
-            for(const apiOption of setup.content.apiOptions) {
+                let options: any[] = [];
 
-                const response = await fetch(apiOption.api, {
-                    method: 'GET',
-                    headers: {
-                        'Content-Type': 'application/json',
-                    },
-                });
+                for(const apiOption of setup.content.apiOptions) {
 
-                if(!response.ok) {
-                    console.error('Failed to fetch options');
-                    return;
+                    const response = await fetch(apiOption.api, {
+                        method: 'GET',
+                        headers: {
+                            'Content-Type': 'application/json',
+                        },
+                    });
+
+                    if(!response.ok) {
+                        console.error('Failed to fetch options');
+                        return;
+                    }
+
+                    const data = await response.json();
+
+                    const returnData = {
+                        reference: apiOption.ref,
+                        options: data.data,
+                    };
+
+                    options.push(returnData);
                 }
 
-                const data = await response.json();
+                setApiOptions(options);
 
-                const returnData = {
-                    reference: apiOption.ref,
-                    options: data.data,
-                };
-
-                options.push(returnData);
+            } catch(error: unknown) {
+                console.error('Failed to fetch options');
+                return;
+            } finally {
+                setOptionsLoaded(true);
             }
-
-            setApiOptions(options);
 
         }
 
@@ -60,33 +68,43 @@ export default function Form({ setup, onClose, onSubmit }: FormProps) {
 
     useEffect(() => {
 
-        const getTicket = async function () {
+        const getData = async function () {
 
             if(!setup.api) {
                 console.log('No API found');
+                setDataLoaded(true);
                 return;
             }
 
-            const response = await fetch(setup.api, {
-                method: 'GET',
-            });
+            try{
 
-            if(!response.ok) {
+                const response = await fetch(setup.api, {
+                    method: 'GET',
+                });
+    
+                if(!response.ok) {
+                    console.error('Failed to fetch ticket');
+                    return;
+                }
+    
+                const data = await response.json();
+    
+                if(data.status) {
+                    setFormData(data.data);
+                } else {
+                    console.error(data.message);
+                }
+
+            } catch(error: unknown) {
                 console.error('Failed to fetch ticket');
                 return;
-            }
-
-            const data = await response.json();
-
-            if(data.status) {
-                setFormData(data.data);
-            } else {
-                console.error(data.message);
+            } finally {
+                setDataLoaded(true);
             }
 
         }
 
-        getTicket();
+        getData();
 
     }, [setup.api])
 
@@ -102,6 +120,14 @@ export default function Form({ setup, onClose, onSubmit }: FormProps) {
         onSubmit(values as unknown as FormDataType);
 
     };
+
+    if(!optionsLoaded || !dataLoaded) {
+        return (
+            <div className={`${styles["column-container"]} ${styles["width-100"]} ${styles["pd-all-round"]} ${styles["content-start"]} ${styles["align-start"]} ${styles["gap-10"]} ${styles["background-style-primary"]}`}>
+                Loading...
+            </div>
+        )
+    }
 
     return (
         <div className={`${styles["column-container"]} ${styles["width-100"]} ${styles["content-start"]} ${styles["align-start"]} ${styles["gap-10"]}`}>

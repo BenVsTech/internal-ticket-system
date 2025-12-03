@@ -31,7 +31,17 @@ export interface TableProps {
         onClick: (id: number) => void;
         archiveable: boolean;
         onArchive: (id: number) => void;
+        hasComments: boolean;
+        onViewComments: (id: number) => void;
     }
+}
+
+export interface CommentsProps {
+    setup: {
+        ticketId: number;
+        userId: number;
+    }
+    onClose: () => void;
 }
 
 export interface StatusDropdownProps {

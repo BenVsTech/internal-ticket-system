@@ -3,10 +3,11 @@
 import styles from "../page.module.css";
 import { useEffect, useState } from "react";
 import { FormData, TicketComponent, TicketsProps } from "../../types/component";
+import { ticketForm } from "@/util/forms/ticket";
 import Table from "./table";
 import StatusDropdown from "./statusDropdown";
 import Form from "./form";
-import { ticketForm } from "@/util/forms/ticket";
+import Comments from "./comments";
 
 // Exports
 
@@ -16,6 +17,7 @@ export default function Tickets({ setup }: TicketsProps) {
     const [filterBy, setFilterBy] = useState<string>('');
     const [showForm, setShowForm] = useState<boolean>(false);
     const [selectedTicketId, setSelectedTicketId] = useState<number | null>(null);
+    const [showComments, setShowComments] = useState<boolean>(false);
 
     useEffect(() => {
 
@@ -134,6 +136,18 @@ export default function Tickets({ setup }: TicketsProps) {
         )
     }
 
+    if(showComments && selectedTicketId) {
+        return (
+            <Comments 
+                setup={{
+                    ticketId: selectedTicketId,
+                    userId: setup.userId,
+                }} 
+                onClose={() => setShowComments(false)}
+            />
+        )
+    }
+
     return (
         <div className={`${styles["column-container"]} ${styles["width-100"]} ${styles["content-start"]} ${styles["align-start"]} ${styles["gap-10"]}`}>
 
@@ -186,6 +200,11 @@ export default function Tickets({ setup }: TicketsProps) {
                     archiveable: true,
                     onArchive: (ticketId: number) => {
                         handleArchiveTicket(ticketId);
+                    },
+                    hasComments: true,
+                    onViewComments: (ticketId: number) => {
+                        setSelectedTicketId(ticketId);
+                        setShowComments(true);
                     },
                 }}
             />

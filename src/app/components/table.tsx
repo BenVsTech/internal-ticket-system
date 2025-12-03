@@ -17,13 +17,19 @@ export default function Table({ setup }: TableProps) {
             </thead>
 
             <tbody>
-                {setup.data.map((row, rowIndex) => (
-                    <tr key={rowIndex} className={setup.clickable ? styles["clickable"] : ""} onClick={() => setup.onClick(rowIndex)}>
-                        {row.map((cell, cellIndex) => (
-                            <td key={cellIndex}>{cell}</td>
-                        ))}
+                {setup.data.length === 0 ? (
+                    <tr>
+                        <td colSpan={setup.headers.length} className={styles["text-center"]}>No data available</td>
                     </tr>
-                ))}
+                ) : (
+                    setup.data.map((row, rowIndex) => (
+                        <tr key={rowIndex} className={setup.clickable ? styles["clickable"] : ""} onClick={() => setup.onClick(Number(row[0]))}>
+                            {row.map((cell, cellIndex) => (
+                                <td key={cellIndex}>{cell}</td>
+                            ))}
+                        </tr>
+                    ))
+                )}
             </tbody>
         </table>
     );

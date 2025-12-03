@@ -8,7 +8,8 @@
     "start": "next start",
     "lint": "eslint",
     "create-local-db": "tsx script/localDatabaseCreation.ts",
-    "create-test-user": "tsx script/testUserCreation.ts"
+    "create-test-user": "tsx script/testUserCreation.ts",
+    "create-sample-tickets": "tsx script/sampleDataCreation.ts"
   },
   "dependencies": {
     "dotenv": "^17.2.3",

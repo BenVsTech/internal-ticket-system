@@ -23,3 +23,27 @@ export const testUser = {
         password: 'test',
     },
 }
+
+export const sampleTickets = [
+    {
+        title: 'Sample Ticket 1',
+        description: 'This is a sample ticket',
+        status: 'Open',
+        createdByUserId: 1,
+        assignedToUserId: 1,
+    },
+    {
+        title: 'Sample Ticket 2',
+        description: 'This is a sample ticket',
+        status: 'Open',
+        createdByUserId: 1,
+        assignedToUserId: 1,
+    },
+    {
+        title: 'Sample Ticket 3',
+        description: 'This is a sample ticket',
+        status: 'Open',
+        createdByUserId: 1,
+        assignedToUserId: 1,
+    },
+]

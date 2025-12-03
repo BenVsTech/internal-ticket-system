@@ -1,13 +1,15 @@
 // Imports
 
 import styles from "../page.module.css";
-import { useEffect } from "react";
-import { TicketsProps } from "../../types/component";
+import { useEffect, useState } from "react";
+import { TicketComponent, TicketsProps } from "../../types/component";
 import Table from "./table";
 
 // Exports
 
 export default function Tickets({ setup }: TicketsProps) {
+
+    const [tickets, setTickets] = useState<TicketComponent[]>([]);
 
     useEffect(() => {
 
@@ -26,7 +28,17 @@ export default function Tickets({ setup }: TicketsProps) {
 
             const data = await response.json();
 
-            console.log('Tickets:', data);
+            if(!data.status) {
+                console.error('Failed to fetch tickets');
+                return;
+            }
+
+            const filteredTickets = setup.isPersonalTickets
+                ? data.data.filter((ticket: TicketComponent) => ticket.assignedTo.id === setup.userId)
+                : data.data;
+
+            setTickets(filteredTickets);
+
         } 
         
         getTickets();
@@ -52,11 +64,13 @@ export default function Tickets({ setup }: TicketsProps) {
             <Table 
                 setup={{
                     headers: ["ID", "Title", "Description", "Created By", "Assigned To"],
-                    data: [
-                        ["1", "Ticket 1", "Description 1", "Created By 1", "Assigned To 1"],
-                        ["2", "Ticket 2", "Description 2", "Created By 2", "Assigned To 2"],
-                        ["3", "Ticket 3", "Description 3", "Created By 3", "Assigned To 3"],
-                    ],
+                    data: tickets.map((ticket) => [
+                        ticket.id.toString(),
+                        ticket.title,
+                        ticket.description,
+                        ticket.created.name,
+                        ticket.assignedTo.name,
+                    ]),
                     clickable: true,
                     onClick: (ticketId: number) => {
                         console.log(`Ticket ${ticketId} clicked`);

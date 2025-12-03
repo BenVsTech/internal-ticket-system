@@ -261,3 +261,23 @@ export async function getAllRowsFromTable(client: DatabaseClient, table: string)
         };
     }
 }
+
+export async function getRowById(client: DatabaseClient, table: string, id: number): Promise<DataReturnObject<any>> {
+    try{
+
+        const result = await client.query(`SELECT * FROM ${table} WHERE id = $1`, [id]);
+
+        return {
+            status: true,
+            data: result.rows[0],
+            message: `Row with id '${id}' from table '${table}' retrieved successfully`
+        };
+
+    } catch(error: unknown) {
+        return {
+            status: false,
+            data: null,
+            message: error instanceof Error ? error.message : `Unknown error while getting row with id '${id}' from table '${table}'`
+        };
+    }
+}

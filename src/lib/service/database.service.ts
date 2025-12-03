@@ -1,7 +1,7 @@
 // Imports
 
 import { localDatabaseConfiguration } from "@/util/local-db";
-import { testUser } from "@/util/constants";
+import { sampleTickets, testUser } from "@/util/constants";
 import { connectToDatabase, closeDatabaseConnection, DatabaseClient } from "@/lib/core/database";
 import { DataReturnObject } from "@/types/helper";
 import { handleCloseDatabaseConnections } from "@/lib/core/helper";
@@ -164,6 +164,55 @@ export async function createTestUser(): Promise<DataReturnObject<boolean>> {
         };
     } finally{
         await handleCloseDatabaseConnections(null, dbClient);
+    }
+}
+
+export async function createSampleTickets(): Promise<DataReturnObject<boolean>> {
+
+    let dbClient: DatabaseClient | null = null;
+
+    try{
+
+        const databaseConnection = await connectToDatabase(false);
+        if(!databaseConnection.status || !databaseConnection.data) {
+            return {
+                status: false,
+                data: null,
+                message: databaseConnection.message
+            };
+        }
+        
+        dbClient = databaseConnection.data;
+
+        for(const ticket of sampleTickets) {
+            const createSampleTicketResult = await dynamicSendData(
+                dbClient,
+                'ticket',
+                ['title', 'description', 'status', 'created_by_user_id', 'assigned_to_user_id'],
+                [ticket.title, ticket.description, ticket.status, ticket.createdByUserId, ticket.assignedToUserId]
+            );
+
+            if(!createSampleTicketResult.status) {
+                return {
+                    status: false,
+                    data: null,
+                    message: createSampleTicketResult.message
+                };
+            }
+        }
+
+        return {
+            status: true,
+            data: true,
+            message: 'Sample tickets created successfully'
+        };
+
+    } catch(error: unknown) {
+        return {
+            status: false,
+            data: null,
+            message: error instanceof Error ? error.message : 'Unknown error while creating sample tickets'
+        };
     }
 }
 

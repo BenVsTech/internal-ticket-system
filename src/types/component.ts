@@ -30,3 +30,20 @@ export interface TableProps {
         onClick: (id: number) => void;
     }
 }
+
+export interface TicketComponent {
+    id: number;
+    title: string;
+    description: string;
+    status: string;
+    created: {
+        id: number;
+        name: string;
+    };
+    assignedTo: {
+        id: number;
+        name: string;
+    };
+    createdAt: Date;
+    updatedAt: Date;
+}

@@ -323,3 +323,31 @@ export async function getRowById(client: DatabaseClient, table: string, id: numb
         };
     }
 }
+
+export async function getRowsByColumnValue(client: DatabaseClient, table: string, column: string, value: string): Promise<DataReturnObject<any[]>> {
+    try{
+
+        const result = await client.query(`SELECT * FROM ${table} WHERE ${column} = $1`, [value]);
+
+        if(result.rows.length === 0) {
+            return {
+                status: true,
+                data: [],
+                message: `No rows with column value '${value}' from table '${table}' found`
+            };
+        } else {
+            return {
+                status: true,
+                data: result.rows,
+                message: `Rows with column value '${value}' from table '${table}' retrieved successfully`
+            };
+        }
+
+    } catch(error: unknown) {
+        return {
+            status: false,
+            data: null,
+            message: error instanceof Error ? error.message : `Unknown error while getting rows by column value '${value}' from table '${table}'`
+        };
+    }
+}

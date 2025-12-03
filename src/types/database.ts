@@ -40,3 +40,11 @@ export interface User {
     updated_at: string;
 }
 
+export interface Comment {
+    id: number;
+    text: string;
+    ticket_id: number;
+    author_id: number;
+    created_at: string;
+    updated_at: string;
+}

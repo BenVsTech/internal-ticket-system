@@ -44,6 +44,16 @@ export interface CommentsProps {
     onClose: () => void;
 }
 
+export interface CommentComponent {
+    id: number;
+    text: string;
+    author: {
+        id: number;
+        name: string;
+    };
+    updatedAt: Date;
+}
+
 export interface StatusDropdownProps {
     setup: {
         onSelect: (status: string) => void;

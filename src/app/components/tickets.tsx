@@ -4,12 +4,14 @@ import styles from "../page.module.css";
 import { useEffect, useState } from "react";
 import { TicketComponent, TicketsProps } from "../../types/component";
 import Table from "./table";
+import StatusDropdown from "./statusDropdown";
 
 // Exports
 
 export default function Tickets({ setup }: TicketsProps) {
 
     const [tickets, setTickets] = useState<TicketComponent[]>([]);
+    const [filterBy, setFilterBy] = useState<string>('');
 
     useEffect(() => {
 
@@ -61,19 +63,33 @@ export default function Tickets({ setup }: TicketsProps) {
                 )}
             </div>
 
+            <div className={`${styles["row-container"]} ${styles["width-100"]} ${styles["content-start"]} ${styles["align-start"]}`}>
+                <StatusDropdown setup={{
+                    onSelect: (status: string) => {
+                        setFilterBy(status);
+                    }
+                }} />
+            </div>
+
             <Table 
                 setup={{
-                    headers: ["ID", "Title", "Description", "Created By", "Assigned To"],
+                    headers: ["ID", "Title", "Description", "Status", "Created By", "Assigned To"],
                     data: tickets.map((ticket) => [
                         ticket.id.toString(),
                         ticket.title,
                         ticket.description,
+                        ticket.status,
                         ticket.created.name,
                         ticket.assignedTo.name,
                     ]),
+                    filterBy: filterBy,
                     clickable: true,
                     onClick: (ticketId: number) => {
                         console.log(`Ticket ${ticketId} clicked`);
+                    },
+                    archiveable: true,
+                    onArchive: (ticketId: number) => {
+                        console.log(`Ticket ${ticketId} archived`);
                     },
                 }}
             />

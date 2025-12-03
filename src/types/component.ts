@@ -26,8 +26,17 @@ export interface TableProps {
     setup: {
         headers: string[];
         data: string[][];
+        filterBy: string;
         clickable: boolean;
         onClick: (id: number) => void;
+        archiveable: boolean;
+        onArchive: (id: number) => void;
+    }
+}
+
+export interface StatusDropdownProps {
+    setup: {
+        onSelect: (status: string) => void;
     }
 }
 

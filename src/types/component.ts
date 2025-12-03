@@ -12,3 +12,21 @@ export interface SettingsProps {
         onClose: () => void;
     }
 }
+
+export interface TicketsProps {
+    setup: {
+        title: string;
+        description: string;
+        userId: number;
+        isPersonalTickets: boolean;
+    }
+}
+
+export interface TableProps {
+    setup: {
+        headers: string[];
+        data: string[][];
+        clickable: boolean;
+        onClick: (id: number) => void;
+    }
+}

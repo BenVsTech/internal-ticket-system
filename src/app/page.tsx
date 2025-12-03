@@ -7,6 +7,7 @@ import { useState, useEffect } from "react";
 import styles from "./page.module.css";
 import { Section } from "../types/component";
 import Settings from "./components/settings";
+import Tickets from "./components/tickets";
 
 // Exports
 
@@ -32,12 +33,26 @@ export default function Home() {
     switch (selectedSection) {
       case "allTickets":
         setContent(
-          <div>This is the all tickets section</div>
+          <Tickets 
+            setup={{
+              title: "All Tickets",
+              description: "In this section, you can create, view, and manage all tickets in the system.",
+              userId: Number(session?.user?.id),
+              isPersonalTickets: false,
+            }}
+          />
         );
         break;
       case "myTickets":
         setContent(
-          <div>This is the my tickets section</div>
+          <Tickets 
+            setup={{
+              title: "My Tickets",
+              description: "In this section, you can view and manage your own tickets.",
+              userId: Number(session?.user?.id),
+              isPersonalTickets: true,
+            }}
+          />
         );
         break;
       case "allTeams":

@@ -241,3 +241,23 @@ export async function dynamicSendData(client: DatabaseClient, table: string, col
         };
     }
 }
+
+export async function getAllRowsFromTable(client: DatabaseClient, table: string): Promise<DataReturnObject<any[]>> {
+    try{
+
+        const result = await client.query(`SELECT * FROM ${table} ORDER BY created_at DESC`);
+
+        return {
+            status: true,
+            data: result.rows,
+            message: `All rows from table '${table}' retrieved successfully`
+        };
+
+    } catch(error: unknown) {
+        return {
+            status: false,
+            data: null,
+            message: error instanceof Error ? error.message : `Unknown error while getting all rows from table '${table}'`
+        };
+    }
+}

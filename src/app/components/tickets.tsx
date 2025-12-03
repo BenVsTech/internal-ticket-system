@@ -12,6 +12,7 @@ export default function Tickets({ setup }: TicketsProps) {
 
     const [tickets, setTickets] = useState<TicketComponent[]>([]);
     const [filterBy, setFilterBy] = useState<string>('');
+    const [showForm, setShowForm] = useState<boolean>(false);
 
     useEffect(() => {
 
@@ -47,6 +48,44 @@ export default function Tickets({ setup }: TicketsProps) {
 
     }, [])
 
+    const handleArchiveTicket = async (ticketId: number) => {
+        try{
+
+            const response = await fetch(`/api/tickets/${ticketId}`,{
+                method: 'DELETE',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+            });
+
+            if(!response.ok) {
+                console.error('Failed to fetch tickets');
+                return;
+            }
+
+            const data = await response.json();
+
+            if (data.status) {
+                setTickets((prev) =>
+                    prev.map((ticket) =>
+                        ticket.id === ticketId
+                            ? { ...ticket, status: "archived" }
+                            : ticket
+                    )
+                );
+            } else {
+                console.error(data.message);
+            }
+
+        } catch(error: unknown) {
+            console.error('Failed to archive ticket');
+        }
+    }
+
+    if(showForm) {
+        console.log('showForm');
+    }
+
     return (
         <div className={`${styles["column-container"]} ${styles["width-100"]} ${styles["content-start"]} ${styles["align-start"]} ${styles["gap-10"]}`}>
 
@@ -58,7 +97,10 @@ export default function Tickets({ setup }: TicketsProps) {
 
                 {!setup.isPersonalTickets && (
                     <div className={`${styles["column-container"]} ${styles["content-start"]} ${styles["align-start"]}`}>
-                        <button className={`${styles["button-structure"]} ${styles["primary-button"]}`}>Create Ticket</button>
+                        <button 
+                            className={`${styles["button-structure"]} ${styles["primary-button"]}`}
+                            onClick={() => setShowForm(true)}
+                        >Create Ticket</button>
                     </div>
                 )}
             </div>
@@ -89,7 +131,7 @@ export default function Tickets({ setup }: TicketsProps) {
                     },
                     archiveable: true,
                     onArchive: (ticketId: number) => {
-                        console.log(`Ticket ${ticketId} archived`);
+                        handleArchiveTicket(ticketId);
                     },
                 }}
             />

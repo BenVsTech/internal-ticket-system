@@ -1,7 +1,7 @@
 // Imports
 
 import { DatabaseClient, connectToDatabase } from "@/lib/core/database";
-import { getAllRowsFromTable, getRowById } from "@/lib/core/database/queries";
+import { getAllRowsFromTable, getRowById, updateRowById } from "@/lib/core/database/queries";
 import { handleCloseDatabaseConnections } from "@/lib/core/helper";
 import { Ticket, User } from "@/types/database";
 import { TicketComponent } from "@/types/component";
@@ -92,6 +92,49 @@ export async function getAllTickets(): Promise<DataReturnObject<any[]>> {
             status: false,
             data: null,
             message: error instanceof Error ? error.message : 'Unknown error while getting all tickets'
+        };
+    } finally{
+        await handleCloseDatabaseConnections(null, dbClient);
+    }
+}
+
+export async function archiveTicket(id: number): Promise<DataReturnObject<boolean>> {
+    
+    let dbClient: DatabaseClient | null = null;
+
+    try{
+
+        const dbConnection = await connectToDatabase(false);
+        if(!dbConnection.status || !dbConnection.data) {
+            return {
+                status: false,
+                data: null,
+                message: dbConnection.message
+            };
+        }
+
+        dbClient = dbConnection.data;
+
+        const updateResult = await updateRowById(dbClient, 'ticket', ['status'], ['archived'], id);
+        if(!updateResult.status) {
+            return {
+                status: false,
+                data: null,
+                message: updateResult.message
+            };
+        }
+
+        return {
+            status: true,
+            data: updateResult.data,
+            message: updateResult.message
+        };
+
+    } catch(error: unknown) {
+        return {
+            status: false,
+            data: null,
+            message: error instanceof Error ? error.message : 'Unknown error while archiving ticket'
         };
     } finally{
         await handleCloseDatabaseConnections(null, dbClient);

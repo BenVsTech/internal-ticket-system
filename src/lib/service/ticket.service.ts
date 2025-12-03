@@ -1,7 +1,7 @@
 // Imports
 
 import { DatabaseClient, connectToDatabase } from "@/lib/core/database";
-import { getAllRowsFromTable, getRowById, updateRowById } from "@/lib/core/database/queries";
+import { dynamicSendData, getAllRowsFromTable, getRowById, updateRowById } from "@/lib/core/database/queries";
 import { handleCloseDatabaseConnections } from "@/lib/core/helper";
 import { Ticket, User } from "@/types/database";
 import { TicketComponent } from "@/types/component";
@@ -141,4 +141,138 @@ export async function archiveTicket(id: number): Promise<DataReturnObject<boolea
     }
 }
 
+export async function createNewTicket(data: Ticket): Promise<DataReturnObject<boolean>> {
 
+    let dbClient: DatabaseClient | null = null;
+
+    try{
+
+        const dbConnection = await connectToDatabase(false);
+        if(!dbConnection.status || !dbConnection.data) {
+            return {
+                status: false,
+                data: null,
+                message: dbConnection.message
+            };
+        }
+        
+        dbClient = dbConnection.data;
+
+        const createNewTicketResult = await dynamicSendData(
+            dbClient, 
+            'ticket', 
+            ['title', 'description', 'status', 'created_by_user_id', 'assigned_to_user_id'], 
+            [data.title, data.description, data.status, data.created_by_user_id, data.assigned_to_user_id]
+        );
+        if(!createNewTicketResult.status) {
+            return {
+                status: false,
+                data: null,
+                message: createNewTicketResult.message
+            };
+        }
+
+        return {
+            status: true,
+            data: createNewTicketResult.data,
+            message: createNewTicketResult.message
+        };
+
+    } catch (error: unknown) {
+        return {
+            status: false,
+            data: null,
+            message: error instanceof Error ? error.message : 'Unknown error while creating new ticket'
+        };
+    } finally{
+        await handleCloseDatabaseConnections(null, dbClient);
+    }
+}
+
+export async function updateTicket(id: number, data: Ticket): Promise<DataReturnObject<boolean>> {
+
+    let dbClient: DatabaseClient | null = null;
+
+    try{
+
+        const dbConnection = await connectToDatabase(false);
+        if(!dbConnection.status || !dbConnection.data) {
+            return {
+                status: false,
+                data: null,
+                message: dbConnection.message
+            };
+        }
+        
+        dbClient = dbConnection.data;
+
+        const updateTicketResult = await updateRowById(dbClient, 'ticket', ['title', 'description', 'status', 'created_by_user_id', 'assigned_to_user_id'], [data.title, data.description, data.status, data.created_by_user_id, data.assigned_to_user_id], id);
+        if(!updateTicketResult.status) {
+            return {
+                status: false,
+                data: null,
+                message: updateTicketResult.message
+            };
+        }
+
+        return {
+            status: true,
+            data: updateTicketResult.data,
+            message: updateTicketResult.message
+        };
+        
+    } catch(error: unknown) {
+        return {
+            status: false,
+            data: null,
+            message: error instanceof Error ? error.message : 'Unknown error while updating ticket'
+        };
+    } finally{
+        await handleCloseDatabaseConnections(null, dbClient);
+    }
+}
+
+export async function getTicketById(id: number): Promise<DataReturnObject<Ticket>> {
+
+    let dbClient: DatabaseClient | null = null;
+
+    try{
+
+        const dbConnection = await connectToDatabase(false);
+        if(!dbConnection.status || !dbConnection.data) {
+            return {
+                status: false,
+                data: null,
+                message: dbConnection.message
+            };
+        }
+        
+        dbClient = dbConnection.data;
+
+        const getTicketByIdResult = await getRowById(dbClient, 'ticket', id);
+        if(!getTicketByIdResult.status) {
+            return {
+                status: false,
+                data: null,
+                message: getTicketByIdResult.message
+            };
+        }
+        
+        const ticket = getTicketByIdResult.data as Ticket;
+
+        return {
+            status: true,
+            data: ticket,
+            message: getTicketByIdResult.message
+        };
+        
+    } catch(error: unknown) {
+        return {
+            status: false,
+            data: null,
+            message: error instanceof Error ? error.message : 'Unknown error while getting ticket by ID'
+        };
+    } finally{
+        await handleCloseDatabaseConnections(null, dbClient);
+    }
+}

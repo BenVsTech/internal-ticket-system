@@ -156,6 +156,10 @@
     font-weight: bold;
 }
 
+.faded {
+    opacity: 0.5;
+}
+
 .input-structure {
     padding: 10px 20px;
     border-radius: 5px;

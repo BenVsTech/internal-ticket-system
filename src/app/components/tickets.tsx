@@ -2,9 +2,11 @@
 
 import styles from "../page.module.css";
 import { useEffect, useState } from "react";
-import { TicketComponent, TicketsProps } from "../../types/component";
+import { FormData, TicketComponent, TicketsProps } from "../../types/component";
 import Table from "./table";
 import StatusDropdown from "./statusDropdown";
+import Form from "./form";
+import { ticketForm } from "@/util/forms/ticket";
 
 // Exports
 
@@ -13,6 +15,7 @@ export default function Tickets({ setup }: TicketsProps) {
     const [tickets, setTickets] = useState<TicketComponent[]>([]);
     const [filterBy, setFilterBy] = useState<string>('');
     const [showForm, setShowForm] = useState<boolean>(false);
+    const [selectedTicketId, setSelectedTicketId] = useState<number | null>(null);
 
     useEffect(() => {
 
@@ -82,8 +85,53 @@ export default function Tickets({ setup }: TicketsProps) {
         }
     }
 
+    const handleCreateTicket = async (data: FormData) => {
+        try{
+
+            const api = selectedTicketId ? `/api/tickets/${selectedTicketId}` : '/api/tickets';
+            const method = selectedTicketId ? 'PUT' : 'POST';
+            const body = selectedTicketId ? { ...data, id: selectedTicketId } : data;
+
+            const response = await fetch(api, {
+                method: method,
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify(body),
+            });
+
+            if(!response.ok) {
+                console.error('Failed to create ticket');
+                return;
+            }
+
+            const responseData = await response.json();
+
+            if(responseData.status) {
+                console.log('Ticket created successfully');
+            } else {
+                console.error(responseData.message);
+            }
+
+        } catch(error: unknown) {
+            console.error('Failed to create ticket');
+        }
+    }
+
     if(showForm) {
-        console.log('showForm');
+        return (
+            <Form 
+                setup={{
+                    api: selectedTicketId ? `/api/tickets/${selectedTicketId}` : null,
+                    content: ticketForm,
+                }}
+                onClose={() => setShowForm(false)}
+                onSubmit={(data: FormData) => {
+                    handleCreateTicket(data);
+                    setShowForm(false);
+                }}
+            />
+        )
     }
 
     return (
@@ -99,8 +147,13 @@ export default function Tickets({ setup }: TicketsProps) {
                     <div className={`${styles["column-container"]} ${styles["content-start"]} ${styles["align-start"]}`}>
                         <button 
                             className={`${styles["button-structure"]} ${styles["primary-button"]}`}
-                            onClick={() => setShowForm(true)}
-                        >Create Ticket</button>
+                            onClick={() => {
+                                setSelectedTicketId(null);
+                                setShowForm(true);
+                            }}
+                        >
+                            Create Ticket
+                        </button>
                     </div>
                 )}
             </div>
@@ -127,7 +180,8 @@ export default function Tickets({ setup }: TicketsProps) {
                     filterBy: filterBy,
                     clickable: true,
                     onClick: (ticketId: number) => {
-                        console.log(`Ticket ${ticketId} clicked`);
+                        setSelectedTicketId(ticketId);
+                        setShowForm(true);
                     },
                     archiveable: true,
                     onArchive: (ticketId: number) => {

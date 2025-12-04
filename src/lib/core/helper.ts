@@ -1,5 +1,6 @@
 // Imports
 
+import { NextResponse } from "next/server";
 import { DatabaseClient } from "./database";
 import { DataReturnObject } from "@/types/helper";
 import { closeDatabaseConnection } from "./database";
@@ -29,3 +30,22 @@ export async function handleCloseDatabaseConnections(temporaryDbClient: Database
     }
 }
 
+export const createApiResponse = <T>(status: boolean, data: T | null, message: string): DataReturnObject<T> => {
+    return {
+        status: status,
+        data: data,
+        message: message
+    }
+}
+
+export const handleApiResponse = (status: boolean, message: string, data?: any) => {
+    if(status){
+        console.log(message);
+    } else {
+        console.error(message);
+    }
+
+    return NextResponse.json({
+        ...createApiResponse(status, data, message)
+    })
+}

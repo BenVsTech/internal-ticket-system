@@ -351,3 +351,23 @@ export async function getRowsByColumnValue(client: DatabaseClient, table: string
         };
     }
 }
+
+export async function deleteRowById(client: DatabaseClient, table: string, id: number): Promise<DataReturnObject<boolean>> {
+    try{
+
+        const result = await client.query(`DELETE FROM ${table} WHERE id = $1`, [id]);
+
+        return {
+            status: true,
+            data: result.rowCount && result.rowCount > 0 ? true : false,
+            message: `Row with id '${id}' from table '${table}' deleted successfully`
+        };
+
+    } catch(error: unknown) {
+        return {
+            status: false,
+            data: null,
+            message: error instanceof Error ? error.message : `Unknown error while deleting row with id '${id}' from table '${table}'`
+        };
+    }
+}

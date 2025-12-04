@@ -13,6 +13,7 @@ export default function Comments({ setup, onClose }: CommentsProps) {
     const [showForm, setShowForm] = useState<boolean>(false);
     const [comments, setComments] = useState<CommentComponent[]>([]);
     const [commentsLoaded, setCommentsLoaded] = useState<boolean>(false);
+    const [selectedCommentId, setSelectedCommentId] = useState<number | null>(null);
 
     useEffect(() => {
         console.log("User ID:", setup.userId);
@@ -85,6 +86,39 @@ export default function Comments({ setup, onClose }: CommentsProps) {
         }
     }
 
+    const handleDeleteComment = async (commentId: number) => {
+        try{
+
+            const response = await fetch(`/api/comments/${commentId}`, {
+                method: 'DELETE',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+            });
+            
+            if(!response.ok) {
+                console.error('Failed to delete comment');
+                return;
+            }
+
+            const responseData = await response.json();
+            
+            if(responseData.status) {
+                setComments((prev) => prev.filter((comment: CommentComponent) => comment.id !== commentId));
+            } else {
+                console.error(responseData.message);
+            }
+            
+        } catch(error: unknown) {
+            console.error('Failed to delete comment');
+            return;
+        }
+    }
+
+    const toggleSettings = (commentId: number) => {
+        setSelectedCommentId(prev => prev === commentId ? null : commentId);
+    }
+
     if(!commentsLoaded) {
         return (
             <div className={`${styles["column-container"]} ${styles["width-100"]} ${styles["pd-all-round"]} ${styles["content-start"]} ${styles["align-start"]} ${styles["gap-10"]} ${styles["background-style-primary"]}`}>
@@ -97,7 +131,7 @@ export default function Comments({ setup, onClose }: CommentsProps) {
         return (
             <Form 
                 setup={{
-                    api: null,
+                    api: selectedCommentId ? `/api/comments/${selectedCommentId}` : null,
                     content: commentForm,
                 }} 
                 onClose={() => setShowForm(false)} 
@@ -121,23 +155,55 @@ export default function Comments({ setup, onClose }: CommentsProps) {
                 </button>
             </div>
 
-            {
-                comments.length === 0 ? (
-                    <div className={`${styles["column-container"]} ${styles["width-100"]} ${styles["pd-all-round"]} ${styles["content-start"]} ${styles["align-start"]} ${styles["gap-10"]} ${styles["background-style-primary"]}`}>
-                        No commment made
-                    </div>
-                ) : (
-                    comments.map((comment: CommentComponent) => (
-                        <div key={comment.id}>
-                            {comment.text}
-                            <div className={`${styles["row-container"]} ${styles["width-100"]} ${styles["content-space-between"]} ${styles["align-center"]} ${styles["gap-10"]}`}>
-                                <span className={`${styles["text-small"]}`}>{comment.author.name}</span>
-                                <span className={`${styles["text-small"]}`}>{String(comment.updatedAt)}</span>
-                            </div>
+            <div className={`${styles["column-container"]} ${styles["width-100"]} ${styles["content-start"]} ${styles["align-start"]} ${styles["gap-10"]}`}>
+
+                {
+                    comments.length === 0 ? (
+                        <div className={`${styles["column-container"]} ${styles["width-100"]} ${styles["pd-all-round"]} ${styles["content-start"]} ${styles["align-start"]} ${styles["gap-10"]} ${styles["background-style-primary"]}`}>
+                            No commment made
                         </div>
-                    ))
-                )
-            }
+                    ) : (
+                        comments.map((comment: CommentComponent) => (
+                            <div key={comment.id} className={`${styles["column-container"]} ${styles["width-100"]} ${styles["pd-all-round"]} ${styles["content-start"]} ${styles["align-start"]} ${styles["gap-10"]} ${styles["background-style-primary"]} ${styles["rounded"]}`}>
+                                <div className={`${styles["row-container"]} ${styles["width-100"]} ${styles["content-space-between"]} ${styles["align-center"]} ${styles["gap-10"]}`}>
+                                    <p>{comment.text}</p>
+                                    <img 
+                                        src="/assets/settings.png" 
+                                        alt="Settings" 
+                                        className={`${styles["icon-structure"]} ${styles["clickable"]}`} 
+                                        onClick={() => toggleSettings(comment.id)}
+                                    />
+                                </div>
+                                <div className={`${styles["row-container"]} ${styles["width-100"]} ${styles["content-space-between"]} ${styles["align-center"]} ${styles["gap-10"]}`}>
+                                    <span className={`${styles["text-small"]}`}>
+                                        <b>{comment.author.name} - {new Date(comment.updatedAt).toISOString().split("T")[0]}</b>
+                                    </span>
+                                </div>
+                                {selectedCommentId === comment.id && (
+                                    <div className={`${styles["column-container"]} ${styles["width-100"]} ${styles["gap-5"]} ${styles["pd-all-round"]} ${styles["background-style-secondary"]} ${styles["rounded"]}`}>
+                                        <p 
+                                            className={`${styles["clickable"]}`} 
+                                            onClick={() => {
+                                                setSelectedCommentId(comment.id);
+                                                setShowForm(true);
+                                            }}
+                                        >
+                                            Edit
+                                        </p>
+                                        <p 
+                                            className={`${styles["clickable"]}`}
+                                            onClick={() => handleDeleteComment(comment.id)}
+                                        >
+                                            Delete
+                                        </p>
+                                    </div>
+                                )}
+                            </div>
+                        ))
+                    )
+                }
+
+            </div>
 
             <div className={`${styles["row-container"]} ${styles["width-100"]} ${styles["content-center"]} ${styles["align-center"]} ${styles["gap-10"]}`}>
                 <button 

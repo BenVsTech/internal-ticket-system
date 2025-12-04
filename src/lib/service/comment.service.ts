@@ -1,7 +1,7 @@
 // Imports
 
 import { DatabaseClient, connectToDatabase } from "@/lib/core/database";
-import { getRowsByColumnValue, getRowById, dynamicSendData } from "@/lib/core/database/queries";
+import { getRowsByColumnValue, getRowById, dynamicSendData, deleteRowById, updateRowById } from "@/lib/core/database/queries";
 import { handleCloseDatabaseConnections } from "@/lib/core/helper";
 import { Comment } from "@/types/database";
 import { CommentComponent } from "@/types/component";
@@ -120,3 +120,133 @@ export async function createNewComment(ticketId: number, userId: number, text: s
     }
 }
 
+export async function deleteComment(id: number): Promise<DataReturnObject<boolean>> {
+
+    let dbClient: DatabaseClient | null = null;
+
+    try{
+
+        const dbConnection = await connectToDatabase(false);
+        if(!dbConnection.status || !dbConnection.data) {
+            return {
+                status: false,
+                data: null,
+                message: dbConnection.message
+            };
+        }
+        
+        dbClient = dbConnection.data;
+
+        const deleteCommentResult = await deleteRowById(dbClient, 'comment', id);
+        if(!deleteCommentResult.status) {
+            return {
+                status: false,
+                data: null,
+                message: deleteCommentResult.message
+            };
+        }
+
+        return {
+            status: true,
+            data: deleteCommentResult.data,
+            message: deleteCommentResult.message
+        };
+
+    } catch(error: unknown) {
+        return {
+            status: false,
+            data: null,
+            message: error instanceof Error ? error.message : 'Unknown error while deleting comment'
+        };
+    } finally{
+        await handleCloseDatabaseConnections(null, dbClient);
+    }
+}
+
+export async function getCommentById(id: number): Promise<DataReturnObject<Comment>> {
+
+    let dbClient: DatabaseClient | null = null;
+
+    try{
+
+        const dbConnection = await connectToDatabase(false);
+        if(!dbConnection.status || !dbConnection.data) {
+            return {
+                status: false,
+                data: null,
+                message: dbConnection.message
+            };
+        }
+
+        dbClient = dbConnection.data;
+
+        const getCommentByIdResult = await getRowById(dbClient, 'comment', id);
+        if(!getCommentByIdResult.status) {
+            return {
+                status: false,
+                data: null,
+                message: getCommentByIdResult.message
+            };
+        }
+        
+        const comment = getCommentByIdResult.data as Comment;
+
+        return {
+            status: true,
+            data: comment,
+            message: getCommentByIdResult.message
+        };
+
+    } catch(error: unknown) {
+        return {
+            status: false,
+            data: null,
+            message: error instanceof Error ? error.message : 'Unknown error while getting comment by ID'
+        };
+    } finally{
+        await handleCloseDatabaseConnections(null, dbClient);
+    }
+}
+
+export async function updateComment(id: number, data: Comment): Promise<DataReturnObject<boolean>> {
+    
+    let dbClient: DatabaseClient | null = null;
+
+    try{
+
+        const dbConnection = await connectToDatabase(false);
+        if(!dbConnection.status || !dbConnection.data) {
+            return {
+                status: false,
+                data: null,
+                message: dbConnection.message
+            };
+        }
+
+        dbClient = dbConnection.data;
+
+        const updateCommentResult = await updateRowById(dbClient, 'comment', ['text'], [data.text], id);
+        if(!updateCommentResult.status) {
+            return {
+                status: false,
+                data: null,
+                message: updateCommentResult.message
+            };
+        }
+
+        return {
+            status: true,
+            data: updateCommentResult.data,
+            message: updateCommentResult.message
+        };
+        
+    } catch(error: unknown) {
+        return {
+            status: false,
+            data: null,
+            message: error instanceof Error ? error.message : 'Unknown error while updating comment'
+        };
+    } finally{
+        await handleCloseDatabaseConnections(null, dbClient);
+    }
+}

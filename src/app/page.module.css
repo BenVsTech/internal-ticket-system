@@ -156,6 +156,10 @@
     font-weight: bold;
 }
 
+.rounded {
+    border-radius: 20px;
+}
+
 .faded {
     opacity: 0.5;
 }

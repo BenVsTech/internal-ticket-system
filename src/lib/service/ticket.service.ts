@@ -206,7 +206,10 @@ export async function updateTicket(id: number, data: Ticket): Promise<DataReturn
         
         dbClient = dbConnection.data;
 
-        const updateTicketResult = await updateRowById(dbClient, 'ticket', ['title', 'description', 'status', 'created_by_user_id', 'assigned_to_user_id'], [data.title, data.description, data.status, data.created_by_user_id, data.assigned_to_user_id], id);
+        const columns = Object.keys(data);
+        const values = Object.values(data);
+
+        const updateTicketResult = await updateRowById(dbClient, 'ticket', columns, values, id);
         if(!updateTicketResult.status) {
             return {
                 status: false,

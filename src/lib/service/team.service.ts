@@ -179,7 +179,10 @@ export async function updateTeam(id: number, team: Team): Promise<DataReturnObje
 
         dbClient = dbConnection.data;
 
-        const updateTeamResult = await updateRowById(dbClient, 'team', ['name', 'description'], [team.name, team.description], id);
+        const columns = Object.keys(team);
+        const values = Object.values(team);
+
+        const updateTeamResult = await updateRowById(dbClient, 'team', columns, values, id);
         if(!updateTeamResult.status) {
             return {
                 status: false,

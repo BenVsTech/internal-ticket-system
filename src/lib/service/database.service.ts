@@ -213,6 +213,8 @@ export async function createSampleTickets(): Promise<DataReturnObject<boolean>> 
             data: null,
             message: error instanceof Error ? error.message : 'Unknown error while creating sample tickets'
         };
+    } finally{
+        await handleCloseDatabaseConnections(null, dbClient);
     }
 }
 

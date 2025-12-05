@@ -5,11 +5,13 @@ import { useSession } from "next-auth/react";
 import { useRouter } from "next/navigation";
 import { useState, useEffect } from "react";
 import styles from "./page.module.css";
-import { Section } from "../types/component";
+import { FormData as FormDataType, Section } from "../types/component";
+import { passwordForm } from "@/util/forms/password";
 import Settings from "./components/settings";
 import Tickets from "./components/tickets";
 import Teams from "./components/teams";
 import Users from "./components/users";
+import Form from "./components/form";
 
 // Exports
 
@@ -62,9 +64,20 @@ export default function Home() {
           <Teams />
         );
         break;
-      case "admin":
+      case "userManagement":
         setContent(
           <Users />
+        );
+        break;
+      case "updatePassword":
+        setContent(
+          <Form 
+            setup={{ api: null, content: passwordForm }} 
+            onClose={() => setSelectedSection("")} 
+            onSubmit={(data: FormDataType) => {
+              handleUpdatePassword(data);
+            }} 
+          />
         );
         break;
       case "home":
@@ -85,6 +98,38 @@ export default function Home() {
         break;
     }
   }, [selectedSection]);
+
+  const handleUpdatePassword = async (data: FormDataType) => {
+    try{
+
+      const response = await fetch(`/api/users/${session?.user?.id}`, {
+        method: 'PUT',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(data),
+      });
+
+      if(!response.ok) {
+        console.error('Failed to update password');
+        return;
+      }
+
+      const responseData = await response.json();
+
+      if(responseData.status) {
+        console.log('Password updated successfully');
+      } else {
+        console.error(responseData.message || 'Failed to update password');
+      }
+
+    } catch(error: unknown) {
+      console.error(error instanceof Error ? error.message : 'Unknown error');
+      return;
+    } finally{
+      setSelectedSection("home");
+    }
+  }
 
   if (status === "loading") {
     return <div>Loading...</div>;
@@ -154,9 +199,14 @@ export default function Home() {
               <ul className={`${styles["column-container"]} ${styles["width-100"]} ${styles["content-start"]} ${styles["align-center"]} ${styles["gap-20"]} ${styles["max-width-150"]} ${styles["background-style-primary"]}`}>
                 <li
                   className={`${styles["pd-top"]}`}
-                  onClick={() => setSelectedSection("admin")}
+                  onClick={() => setSelectedSection("userManagement")}
                 >
-                  Admin
+                  User Management
+                </li>
+                <li
+                  onClick={() => setSelectedSection("updatePassword")}
+                >
+                  Update Password
                 </li>
               </ul>
             )

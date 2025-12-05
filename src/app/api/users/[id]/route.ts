@@ -28,15 +28,13 @@ export async function GET(request: NextRequest, { params }: { params: Promise<{ 
 
 export async function PUT(request: NextRequest, { params }: { params: Promise<{ id: string }> }): Promise<NextResponse> {
     try{
+        
         const { id } = await params;
         if(!id) {
             return handleApiResponse(false, 'User ID is required', null);
         }
         
         const body = await request.json();
-        if(!body.name || !body.email || !body.team_id) {
-            return handleApiResponse(false, 'Missing required fields', null);
-        }
 
         const updateUserResult = await updateUser(Number(id), body);
         if(!updateUserResult.status) {

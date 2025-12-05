@@ -225,7 +225,10 @@ export async function updateComment(id: number, data: Comment): Promise<DataRetu
 
         dbClient = dbConnection.data;
 
-        const updateCommentResult = await updateRowById(dbClient, 'comment', ['text'], [data.text], id);
+        const columns = Object.keys(data);
+        const values = Object.values(data);
+
+        const updateCommentResult = await updateRowById(dbClient, 'comment', columns, values, id);
         if(!updateCommentResult.status) {
             return {
                 status: false,

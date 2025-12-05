@@ -199,7 +199,10 @@ export async function updateUser(id: number, user: User): Promise<DataReturnObje
 
         dbClient = dbConnection.data;
 
-        const updateUserResult = await updateRowById(dbClient, 'users', ['name', 'email', 'team_id'], [user.name, user.email, user.team_id], id);
+        const columns = Object.keys(user);
+        const values = Object.values(user);
+
+        const updateUserResult = await updateRowById(dbClient, 'users', columns, values, id);
         if(!updateUserResult.status) {
             return {
                 status: false,

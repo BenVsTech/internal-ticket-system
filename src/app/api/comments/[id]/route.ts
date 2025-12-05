@@ -55,11 +55,8 @@ export async function PUT(request: NextRequest, { params }: { params: Promise<{ 
         }
 
         const body = await request.json();
-        if(!body.text) {
-            return handleApiResponse(false, 'Text is required', null);
-        }
 
-        const updateCommentResult = await updateComment(Number(id), body.text);
+        const updateCommentResult = await updateComment(Number(id), body);
         if(!updateCommentResult.status) {
             return handleApiResponse(false, updateCommentResult.message, null);
         }

@@ -75,8 +75,7 @@ export default function Home() {
             setup={{ api: null, content: passwordForm }} 
             onClose={() => setSelectedSection("")} 
             onSubmit={(data: FormDataType) => {
-              setSelectedSection("home");
-              console.log('Data received:', data);
+              handleUpdatePassword(data);
             }} 
           />
         );
@@ -99,6 +98,38 @@ export default function Home() {
         break;
     }
   }, [selectedSection]);
+
+  const handleUpdatePassword = async (data: FormDataType) => {
+    try{
+
+      const response = await fetch(`/api/users/${session?.user?.id}`, {
+        method: 'PUT',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(data),
+      });
+
+      if(!response.ok) {
+        console.error('Failed to update password');
+        return;
+      }
+
+      const responseData = await response.json();
+
+      if(responseData.status) {
+        console.log('Password updated successfully');
+      } else {
+        console.error(responseData.message || 'Failed to update password');
+      }
+
+    } catch(error: unknown) {
+      console.error(error instanceof Error ? error.message : 'Unknown error');
+      return;
+    } finally{
+      setSelectedSection("home");
+    }
+  }
 
   if (status === "loading") {
     return <div>Loading...</div>;

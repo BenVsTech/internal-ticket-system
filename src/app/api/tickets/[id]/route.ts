@@ -32,10 +32,6 @@ export async function PUT(request: NextRequest, { params }: { params: Promise<{ 
         const { id } = await params;
         const body = await request.json();
 
-        if(!id || !body.title || !body.description || !body.status || !body.created_by_user_id || !body.assigned_to_user_id) {
-            return handleApiResponse(false, 'Missing required fields', null);
-        }
-
         const updateTicketResult = await updateTicket(Number(id), body);
         if(!updateTicketResult.status) {
             return handleApiResponse(false, updateTicketResult.message, null);

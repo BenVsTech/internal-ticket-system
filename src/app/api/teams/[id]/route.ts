@@ -35,10 +35,7 @@ export async function PUT(request: NextRequest, { params }: { params: Promise<{ 
         }
 
         const body = await request.json();
-        if(!body.name || !body.description) {
-            return handleApiResponse(false, 'Missing required fields', null);
-        }
-
+        
         const updateTeamResult = await updateTeam(Number(id), body);
         if(!updateTeamResult.status) {
             return handleApiResponse(false, updateTeamResult.message, null);

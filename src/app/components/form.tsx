@@ -71,7 +71,6 @@ export default function Form({ setup, onClose, onSubmit }: FormProps) {
         const getData = async function () {
 
             if(!setup.api) {
-                console.log('No API found');
                 setDataLoaded(true);
                 return;
             }

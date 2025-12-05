@@ -129,3 +129,14 @@ export interface TeamComponent {
     memberCount: number;
     createdAt: Date;
 }
+
+export interface UserComponent {
+    id: number;
+    name: string;
+    email: string;
+    team: {
+        id: number;
+        name: string;
+    };
+    createdAt: Date;
+}

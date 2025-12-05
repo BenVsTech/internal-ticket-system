@@ -8,6 +8,8 @@ import styles from "./page.module.css";
 import { Section } from "../types/component";
 import Settings from "./components/settings";
 import Tickets from "./components/tickets";
+import Teams from "./components/teams";
+import Users from "./components/users";
 
 // Exports
 
@@ -57,12 +59,12 @@ export default function Home() {
         break;
       case "allTeams":
         setContent(
-          <div>This is the all teams section</div>
+          <Teams />
         );
         break;
       case "admin":
         setContent(
-          <div>This is the admin section</div>
+          <Users />
         );
         break;
       case "home":

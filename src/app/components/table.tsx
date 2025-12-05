@@ -17,7 +17,7 @@ export default function Table({ setup }: TableProps) {
     return (
         <table className={styles["table-container"]}>
             <thead>
-                <tr className={styles["text-center"]}>
+                <tr>
                     {setup.headers.map((header) => (
                         <th key={header}>{header}</th>
                     ))}

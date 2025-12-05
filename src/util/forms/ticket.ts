@@ -20,7 +20,7 @@ export const ticketForm: FormElements = {
             type: 'text',
             label: 'Title',
             instructions: 'Enter the title of the ticket',
-            id: 'title',
+            id: 'tiatle',
             name: 'title',
             placeholder: 'e.g. "Bug Report"',
             optionApiStatus: false,

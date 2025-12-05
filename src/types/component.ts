@@ -77,6 +77,15 @@ export interface TicketComponent {
     updatedAt: Date;
 }
 
+export interface FormProps {
+    setup: {
+        api: string | null;
+        content: FormElements;
+    },
+    onClose: () => void;
+    onSubmit: (data: FormData) => void;
+}
+
 export interface OptionApi {
     api: string;
     ref: string;
@@ -113,11 +122,21 @@ export interface FormData {
     [key: string]: string;
 }
 
-export interface FormProps {
-    setup: {
-        api: string | null;
-        content: FormElements;
-    },
-    onClose: () => void;
-    onSubmit: (data: FormData) => void;
+export interface TeamComponent {
+    id: number;
+    name: string;
+    description: string;
+    memberCount: number;
+    createdAt: Date;
+}
+
+export interface UserComponent {
+    id: number;
+    name: string;
+    email: string;
+    team: {
+        id: number;
+        name: string;
+    };
+    createdAt: Date;
 }

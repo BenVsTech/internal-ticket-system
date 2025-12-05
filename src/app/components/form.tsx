@@ -71,7 +71,6 @@ export default function Form({ setup, onClose, onSubmit }: FormProps) {
         const getData = async function () {
 
             if(!setup.api) {
-                console.log('No API found');
                 setDataLoaded(true);
                 return;
             }
@@ -114,8 +113,6 @@ export default function Form({ setup, onClose, onSubmit }: FormProps) {
     
         const formData = new FormData(e.currentTarget);
         const values = Object.fromEntries(formData.entries());
-    
-        console.log("Form submitted:", values);
 
         onSubmit(values as unknown as FormDataType);
 
